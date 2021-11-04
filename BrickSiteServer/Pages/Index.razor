@@ -1,0 +1,80 @@
+﻿@page "/"
+@using System
+@using System.IO
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Logging
+@inject ILogger<Index> Logger
+@inject IWebHostEnvironment Environment
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+
+
+<h3>Upload Files</h3>
+
+<p>
+    <label>
+        Upload up to @maxAllowedFiles of up to @maxFileSize bytes:
+        <InputFile OnChange="@LoadFiles" multiple />
+    </label>
+</p>
+
+@if (isLoading)
+{
+    <p>Uploading...</p>
+}
+else
+{
+    if (_bsc == null)
+    {
+    <p>No collection uploaded.</p>
+    }
+    else
+    {
+        <CollectionSummary Sets=_bsc />
+    }
+}
+
+@code {
+    private List<IBrowserFile> loadedFiles = new();
+    private long maxFileSize = 1 * 1024 * 1024;
+    private int maxAllowedFiles = 3;
+    private bool isLoading;
+
+    private BrickSetCollection _bsc;
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        loadedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                loadedFiles.Add(file);
+
+                using var inputFileStream = file.OpenReadStream(maxFileSize);
+
+                var bsc = new BrickSetCollection()
+                    {
+                        Name = Path.GetFileNameWithoutExtension(file.Name),
+                    };
+                await bsc.LoadSets(inputFileStream);
+
+                _bsc = bsc;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("File: {Filename} Error: {Error}",
+                    file.Name, ex.Message);
+            }
+        }
+
+        isLoading = false;
+    }
+}

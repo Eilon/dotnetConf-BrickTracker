@@ -1,0 +1,77 @@
+﻿@page "/"
+@using System.IO
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+@if (_setCollections.Count == 0)
+{
+    <div>Loading...</div>
+}
+else
+{
+    foreach (var setCollection in _setCollections)
+    {
+        <div @key=@setCollection.set.Name>
+            <h1>@setCollection.set.Name</h1>
+            <CollectionSummary Sets=setCollection.set />
+        </div>
+    }
+}
+
+@code
+{
+    List<(string path, BrickSetCollection set)> _setCollections = new();
+
+    const string CsvSearchPattern = "*.csv";
+    readonly string DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load existing CSVs
+        await UpdateCsvList();
+
+        // Watch for any new CSVs
+        var fsw = new FileSystemWatcher(DataFolder, CsvSearchPattern);
+        fsw.Changed += OnFileSystemChanged;
+        fsw.Created += OnFileSystemChanged;
+        fsw.Deleted += OnFileSystemChanged;
+        fsw.Renamed += OnFileSystemChanged;
+        fsw.EnableRaisingEvents = true;
+    }
+
+    async Task UpdateCsvList()
+    {
+        var foundCsvs = Directory.GetFiles(DataFolder, CsvSearchPattern);
+
+        var loadedCsvs = _setCollections.Select(c => c.path);
+        var csvsToRemove = loadedCsvs.Except(foundCsvs);
+        var csvsToAdd = foundCsvs.Except(loadedCsvs);
+
+        _setCollections = _setCollections.Where(sc => !csvsToRemove.Contains(sc.path)).ToList();
+
+        foreach (var csvToAdd in csvsToAdd)
+        {
+            await AddCsvSet(csvToAdd);
+        }
+    }
+
+    async Task AddCsvSet(string fullPath)
+    {
+        using var fileStream = File.Open(fullPath, FileMode.Open, FileAccess.Read);
+        var bsc = new BrickSetCollection()
+            {
+                Name = Path.GetFileNameWithoutExtension(fullPath),
+            };
+        await bsc.LoadSets(fileStream);
+        _setCollections.Add((fullPath, bsc));
+    }
+
+    async void OnFileSystemChanged(object sender, EventArgs e)
+    {
+        await UpdateCsvList();
+
+        await InvokeAsync(() => StateHasChanged());
+    }
+}

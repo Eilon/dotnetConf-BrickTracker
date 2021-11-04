@@ -1,0 +1,35 @@
+﻿@*<div class="my-component">
+    This component is defined in the <strong>BrickSummary</strong> library.
+</div>*@
+
+@if (Sets == null)
+{
+    <div>Loading brick sets...</div>
+}
+else
+{
+    <div>@Sets.Sets.Count sets</div>
+    <ul>
+        @foreach (var set in Sets.Sets.Take(10))
+        {
+            <li>@set.Number (@set.Theme) @GetVolume(set)cm^3</li>
+        }
+    </ul>
+}
+
+@code
+{
+    [Parameter] public BrickSetCollection? Sets { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+    }
+
+    private decimal GetVolume(BrickSetItem set)
+    {
+        var volume = set.Width * set.Height * set.Depth;
+        return volume ?? -1;
+    }
+}
