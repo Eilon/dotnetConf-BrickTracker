@@ -56,8 +56,12 @@ namespace BrickSummary
             return columnNames;
         }
 
-        private static string SimplifyName(string rawName)
+        private static string SimplifyName(string? rawName)
         {
+            if (string.IsNullOrEmpty(rawName))
+            {
+                return string.Empty;
+            }
             return rawName
                 .Replace("(", "")
                 .Replace(")", "")

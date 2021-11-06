@@ -10,9 +10,16 @@ else
 {
     <div>@Sets.Sets.Count sets</div>
     <ul>
-        @foreach (var set in Sets.Sets.Take(10))
+        @foreach (var themeSets in Sets.Sets.GroupBy(s => s.Theme).OrderByDescending(t => t.Count()))
         {
-            <li>@set.Number (@set.Theme) @set.Set_name @GetVolume(set)cm^3</li>
+            <li>@themeSets.Key (@themeSets.Count())
+                <ul>
+                    @foreach (var set in themeSets.OrderBy(s => s.Pieces ?? 0))
+                    {
+                        <li>@set.Number: @set.Set_name @GetVolumeString(set)</li>
+                    }
+                </ul>
+            </li>
         }
     </ul>
 }
@@ -27,9 +34,19 @@ else
 
     }
 
-    private decimal GetVolume(BrickSetItem set)
+    private decimal? GetVolume(BrickSetItem set)
     {
         var volume = set.Width * set.Height * set.Depth;
-        return volume ?? -1;
+        return volume;
+    }
+
+    private string GetVolumeString(BrickSetItem set)
+    {
+        var volume = GetVolume(set);
+        if (volume == null)
+        {
+            return string.Empty;
+        }
+        return string.Format("{0:n0}cm³", volume);
     }
 }
