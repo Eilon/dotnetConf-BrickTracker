@@ -23,7 +23,7 @@ namespace BrickSummary
 
         private static BrickSetItem BuildBrickSetItem(string brickSetLine, IDictionary<string, int> columnMap)
         {
-            var columnValues = brickSetLine.Split(',').Select(value => value.Trim('"')).ToList();
+            var columnValues = GetRowParts(brickSetLine);
 
             var bsi = new BrickSetItem();
 
@@ -39,7 +39,7 @@ namespace BrickSummary
             return bsi;
         }
 
-        private static object? GetValue(string stringValue, Type propertyType)
+        private static object? GetValue(string? stringValue, Type propertyType)
         {
             if (string.IsNullOrWhiteSpace(stringValue))
             {
@@ -51,7 +51,7 @@ namespace BrickSummary
 
         private static IDictionary<string, int> GetColumnMapping(string headerLine)
         {
-            var rawColumnNames = headerLine.Split(',');
+            var rawColumnNames = GetRowParts(headerLine);
             var columnNames = rawColumnNames.Select((rawName, index) => (name: SimplifyName(rawName), index: index)).ToDictionary(x => x.name, x => x.index);
             return columnNames;
         }
@@ -62,6 +62,41 @@ namespace BrickSummary
                 .Replace("(", "")
                 .Replace(")", "")
                 .Replace(" ", "_");
+        }
+
+        private static IList<string?> GetRowParts(string csvRow)
+        {
+            var parts = new List<string?>();
+
+            var index = 0;
+
+            while (index < csvRow.Length)
+            {
+                if (csvRow[index] == ',')
+                {
+                    parts.Add(null);
+                }
+                else if (csvRow[index] == '"')
+                {
+                    var nextQuoteIndex = csvRow.IndexOf('"', index + 1);
+                    parts.Add(csvRow.Substring(index + 1, nextQuoteIndex - index - 1));
+                    index = nextQuoteIndex + 1; // skip the close quote
+                }
+                else
+                {
+                    var nextCommaIndex = csvRow.IndexOf(',', index + 1);
+                    if (nextCommaIndex == -1)
+                    {
+                        nextCommaIndex = csvRow.Length;
+                    }
+                    parts.Add(csvRow.Substring(index, nextCommaIndex - index));
+                    index = nextCommaIndex;
+                }
+
+                index++; // skip the comma
+            }
+
+            return parts;
         }
     }
 }
