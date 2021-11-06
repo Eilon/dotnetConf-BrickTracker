@@ -12,7 +12,7 @@ else
     <ul>
         @foreach (var set in Sets.Sets.Take(10))
         {
-            <li>@set.Number (@set.Theme) @GetVolume(set)cm^3</li>
+            <li>@set.Number (@set.Theme) @set.Set_name @GetVolume(set)cm^3</li>
         }
     </ul>
 }
