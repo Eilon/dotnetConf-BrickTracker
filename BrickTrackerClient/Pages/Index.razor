@@ -2,10 +2,6 @@
 @using System.IO
 @using Microsoft.Maui.Essentials
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
 @if (showFilePicker)
 {
     <button @onclick=OnPickFile>Open a file</button>
@@ -100,6 +96,9 @@ else
 
     async void OnFileSystemChanged(object sender, EventArgs e)
     {
+        // Wait 1 second to avoid "file in use" errors
+        await Task.Delay(1000);
+
         // Whenever any file system change happens, re-scan everything to get the current state
         await UpdateCsvList();
 
