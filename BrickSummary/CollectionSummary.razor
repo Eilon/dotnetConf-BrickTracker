@@ -1,24 +1,42 @@
-﻿@*<div class="my-component">
-    This component is defined in the <strong>BrickSummary</strong> library.
-</div>*@
-
-@if (Sets == null)
+﻿@if (Sets == null)
 {
     <div>Loading brick sets...</div>
 }
 else
 {
-    <div>@Sets.Sets.Count sets</div>
+    <div>@Sets.Sets.Count sets in collection</div>
     <ul>
         @foreach (var themeSets in Sets.Sets.GroupBy(s => s.Theme).OrderByDescending(t => t.Count()))
         {
-            <li>@themeSets.Key (@themeSets.Count())
-                <ul>
-                    @foreach (var set in themeSets.OrderBy(s => s.Pieces ?? 0))
+            <li><p class="setTheme">@themeSets.Key (@themeSets.Count())</p>
+
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Pieces</th>
+                      <th scope="col">Volume</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach (var set in themeSets.OrderByDescending(s => s.Pieces ?? 0).Take(10))
                     {
-                        <li>@set.Number: @set.Set_name @GetVolumeString(set)</li>
+                        <tr>
+                          <th scope="row">@set.Number</th>
+                          <td>@set.Set_name</td>
+                          <td>@set.Pieces</td>
+                          <td>@GetVolumeString(set)</td>
+                        </tr>
                     }
-                </ul>
+                    @if (themeSets.Count() > 10)
+                    {
+                        <tr>
+                          <td colspan="4" class="table-warning">... @(themeSets.Count() - 10) set(s) not shown.</td>
+                        </tr>
+                    }
+                  </tbody>
+                </table>
             </li>
         }
     </ul>
