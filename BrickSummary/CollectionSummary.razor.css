@@ -3,13 +3,10 @@
     font-size: larger;
     font-weight: 600;
 }
-.setList p
-{
-    margin: 1px;
-    padding: 1px;
-}
 
-.setHeader
+.analysis
 {
-    font-weight: 500;
+    border: 1px dashed gray;
+    padding: 3px;
+    margin: 3px;
 }

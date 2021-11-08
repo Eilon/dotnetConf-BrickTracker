@@ -8,8 +8,11 @@ else
     <ul>
         @foreach (var themeSets in Sets.Sets.GroupBy(s => s.Theme).OrderByDescending(t => t.Count()))
         {
-            <li><p class="setTheme">@themeSets.Key (@themeSets.Count())</p>
-
+            <li><p class="setTheme">@themeSets.Key (@themeSets.Count()) <button @onclick="async () => await AnalyzeTheme(themeSets)">Analyze</button></p>
+                @if (Sets.Analysis.TryGetValue("analysis/" + themeSets.Key, out var analysis))
+                {
+                    <div class="analysis">@analysis</div>
+                }
                 <table class="table">
                   <thead>
                     <tr>
@@ -49,7 +52,24 @@ else
     protected override void OnInitialized()
     {
         base.OnInitialized();
+    }
 
+    async Task AnalyzeTheme(IGrouping<string?, BrickSetItem> setsInTheme)
+    {
+        SetAnalysis("Analyzing...");
+        await Task.Delay(1000);
+        SetAnalysis("... Computing...");
+        await Task.Delay(1000);
+        SetAnalysis("... ... Processing...");
+        await Task.Delay(1000);
+
+        SetAnalysis($"Computed {setsInTheme.Sum(s => Math.Max(s.Pieces ?? 0, 0))} pieces!");
+
+        void SetAnalysis(string value)
+        {
+            Sets!.Analysis["analysis/" + setsInTheme.Key] = value;
+            StateHasChanged();
+        }
     }
 
     private decimal? GetVolume(BrickSetItem set)
