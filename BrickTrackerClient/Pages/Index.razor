@@ -1,19 +1,20 @@
 ﻿@page "/"
 @using System.IO
 @using Microsoft.Maui.Essentials
+@inject AppState AppState
 
 @if (showFilePicker)
 {
     <button @onclick=OnPickFile>Open a file</button>
 }
 
-@if (_setCollections.Count == 0)
+@if (AppState.SetCollections.Count == 0)
 {
     <div>No collections!</div>
 }
 else
 {
-    foreach (var setCollection in _setCollections)
+    foreach (var setCollection in AppState.SetCollections)
     {
         <div>
             <h1>@setCollection.SetCollection.Name</h1>
@@ -24,17 +25,8 @@ else
 
 @code
 {
-    List<SetCollectionItem> _setCollections = new();
-
     bool showFilePicker = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst();// || OperatingSystem.IsWindows();
     bool useFileWatcher = OperatingSystem.IsMacCatalyst() || OperatingSystem.IsWindows();
-
-    class SetCollectionItem
-    {
-        public BrickSetCollection SetCollection { get; set; }
-        public bool FromFileSystem { get; set; }
-        public string FilePath { get; set; }
-    }
 
     const string CsvSearchPattern = "*.csv";
     readonly string DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
@@ -60,11 +52,11 @@ else
     {
         var foundCsvPaths = Directory.GetFiles(DataFolder, CsvSearchPattern);
 
-        var loadedCsvPaths = _setCollections.Select(c => c.FilePath);
+        var loadedCsvPaths = AppState.SetCollections.Select(c => c.FilePath);
         var csvPathsToRemove = loadedCsvPaths.Except(foundCsvPaths);
         var csvPathsToAdd = foundCsvPaths.Except(loadedCsvPaths);
 
-        _setCollections = _setCollections.Where(sc => !csvPathsToRemove.Contains(sc.FilePath) || !sc.FromFileSystem).ToList();
+        AppState.SetCollections = AppState.SetCollections.Where(sc => !csvPathsToRemove.Contains(sc.FilePath) || !sc.FromFileSystem).ToList();
 
         foreach (var csvPathToAdd in csvPathsToAdd)
         {
@@ -91,7 +83,7 @@ else
                 Name = Path.GetFileNameWithoutExtension(filePath),
             };
         await bsc.LoadSets(csvStream);
-        _setCollections.Add(new SetCollectionItem { FilePath = filePath, SetCollection = bsc, FromFileSystem = true });
+        AppState.SetCollections.Add(new SetCollectionItem { FilePath = filePath, SetCollection = bsc, FromFileSystem = true });
     }
 
     async void OnFileSystemChanged(object sender, EventArgs e)

@@ -5,6 +5,7 @@
 @using Microsoft.Extensions.Logging
 @inject ILogger<Index> Logger
 @inject IWebHostEnvironment Environment
+@inject AppState AppState
 
 <PageTitle>Index</PageTitle>
 
@@ -23,13 +24,13 @@
 }
 else
 {
-    if (_setCollections.Count == 0)
+    if (AppState.SetCollections.Count == 0)
     {
         <div>No collections!</div>
     }
     else
     {
-        foreach (var setCollection in _setCollections)
+        foreach (var setCollection in AppState.SetCollections)
         {
             <div>
                 <h1>@setCollection.Name</h1>
@@ -45,7 +46,6 @@ else
     private int maxAllowedFiles = 3;
     private bool isLoading;
 
-    private List<BrickSetCollection> _setCollections = new();
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
@@ -78,7 +78,7 @@ else
             }
         }
 
-        _setCollections = uploadedSetCollections;
+        AppState.SetCollections = uploadedSetCollections;
 
         isLoading = false;
     }

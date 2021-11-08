@@ -23,6 +23,7 @@ namespace BrickTrackerClient
 
             builder.Services.AddBlazorWebView();
             builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddSingleton<AppState>();
 
             return builder.Build();
         }
