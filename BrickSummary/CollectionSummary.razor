@@ -6,42 +6,42 @@ else
 {
     <div>@Sets.Sets.Count sets in collection</div>
     <ul>
-        @foreach (var themeSets in Sets.Sets.GroupBy(s => s.Theme).OrderByDescending(t => t.Count()))
+    @foreach (var themeSets in Sets.Sets.GroupBy(s => s.Theme).OrderByDescending(t => t.Count()))
+    {
+        <li><p class="setTheme">@themeSets.Key (@themeSets.Count()) <button @onclick="async () => await AnalyzeTheme(themeSets)">Analyze</button></p>
+        @if (Sets.Analysis.TryGetValue("analysis/" + themeSets.Key, out var analysis))
         {
-            <li><p class="setTheme">@themeSets.Key (@themeSets.Count()) <button @onclick="async () => await AnalyzeTheme(themeSets)">Analyze</button></p>
-                @if (Sets.Analysis.TryGetValue("analysis/" + themeSets.Key, out var analysis))
-                {
-                    <div class="analysis">@analysis</div>
-                }
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">Pieces</th>
-                      <th scope="col">Volume</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @foreach (var set in themeSets.OrderByDescending(s => s.Pieces ?? 0).Take(10))
-                    {
-                        <tr>
-                          <th scope="row">@set.Number</th>
-                          <td>@set.Set_name</td>
-                          <td>@set.Pieces</td>
-                          <td>@GetVolumeString(set)</td>
-                        </tr>
-                    }
-                    @if (themeSets.Count() > 10)
-                    {
-                        <tr>
-                          <td colspan="4" class="table-warning">... @(themeSets.Count() - 10) set(s) not shown.</td>
-                        </tr>
-                    }
-                  </tbody>
-                </table>
-            </li>
+            <div class="analysis">@analysis</div>
         }
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Pieces</th>
+                    <th scope="col">Volume</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var set in themeSets.OrderByDescending(s => s.Pieces ?? 0).Take(10))
+            {
+                <tr>
+                    <th scope="row">@set.Number</th>
+                    <td>@set.Set_name</td>
+                    <td>@set.Pieces</td>
+                    <td>@GetVolumeString(set)</td>
+                </tr>
+            }
+            @if (themeSets.Count() > 10)
+            {
+                <tr>
+                    <td colspan="4" class="table-warning">... @(themeSets.Count() - 10) set(s) not shown.</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </li>
+    }
     </ul>
 }
 
@@ -63,7 +63,14 @@ else
         SetAnalysis("... ... Processing...");
         await Task.Delay(1000);
 
-        SetAnalysis($"Computed {setsInTheme.Sum(s => Math.Max(s.Pieces ?? 0, 0))} pieces!");
+        var totalPieces = setsInTheme.Sum(s => Math.Max(s.Pieces ?? 0, 0));
+        var totalVolumeCMCubed = setsInTheme.Sum(s => GetVolume(s) ?? 0);
+        const decimal CubicCMInCubicFoot = 42_475;
+        const decimal CubicFeetInMovingBox = 1.5m;
+        var totalVolumeCubicFeet = totalVolumeCMCubed / CubicCMInCubicFoot;
+        var totalMovingBoxes = Math.Ceiling(totalVolumeCubicFeet / CubicFeetInMovingBox);
+
+        SetAnalysis($"Computed {totalPieces} pieces! Need {totalMovingBoxes:N0} boxes to move it all.");
 
         void SetAnalysis(string value)
         {
