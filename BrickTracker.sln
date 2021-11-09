@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31815.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrickTrackerClient", "BrickTrackerClient\BrickTrackerClient.csproj", "{F5140637-B32F-4E00-8275-A59566279E63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrickTrackerClient", "BrickTrackerClient\BrickTrackerClient.csproj", "{F5140637-B32F-4E00-8275-A59566279E63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrickSummary", "BrickSummary\BrickSummary.csproj", "{46C90744-77A3-4451-8624-0E835A3C08E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrickSummary", "BrickSummary\BrickSummary.csproj", "{46C90744-77A3-4451-8624-0E835A3C08E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrickSiteServer", "BrickSiteServer\BrickSiteServer.csproj", "{4F89BF27-F2AB-4AEB-BFFC-0F1C5DA2E71E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrickSiteServer", "BrickSiteServer\BrickSiteServer.csproj", "{4F89BF27-F2AB-4AEB-BFFC-0F1C5DA2E71E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrickInfoWinForms", "BrickInfoWinForms\BrickInfoWinForms.csproj", "{D478A027-809D-48E0-BC97-5D3FB8318E22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,10 @@ Global
 		{4F89BF27-F2AB-4AEB-BFFC-0F1C5DA2E71E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F89BF27-F2AB-4AEB-BFFC-0F1C5DA2E71E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F89BF27-F2AB-4AEB-BFFC-0F1C5DA2E71E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D478A027-809D-48E0-BC97-5D3FB8318E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D478A027-809D-48E0-BC97-5D3FB8318E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D478A027-809D-48E0-BC97-5D3FB8318E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D478A027-809D-48E0-BC97-5D3FB8318E22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
