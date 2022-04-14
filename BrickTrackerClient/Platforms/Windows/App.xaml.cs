@@ -28,7 +28,7 @@ namespace BrickTrackerClient.WinUI
         {
             base.OnLaunched(args);
 
-            Microsoft.Maui.Essentials.Platform.OnLaunched(args);
+            Microsoft.Maui.ApplicationModel.Platform.OnLaunched(args);
         }
     }
 }
